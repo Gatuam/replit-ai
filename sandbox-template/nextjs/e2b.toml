@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (aee4ci7q65yoagbk3ra8) or template name (replit-ai-nextjs) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("replit-ai-nextjs") # Sync sandbox
+# sandbox = await AsyncSandbox.create("replit-ai-nextjs") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('replit-ai-nextjs')
+
+team_id = "b6c1211b-e42a-4d36-97ed-92e9d8f4802f"
+start_cmd = "/compile_page.sh"
+dockerfile = "e2b.Dockerfile"
+template_name = "replit-ai-nextjs"
+template_id = "aee4ci7q65yoagbk3ra8"
