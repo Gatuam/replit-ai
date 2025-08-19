@@ -5,16 +5,23 @@ import {
   createAgent,
   createNetwork,
   createTool,
+  type Tool,
 } from "@inngest/agent-kit";
 import { getSandbox, lastAssitMessage } from "./ultis";
 import z from "zod";
 import { PROMPT } from "@/prompt";
+import { prisma } from "@/lib/db";
+
+interface AgentState {
+  summary: string;
+  files: { [path: string]: string };
+}
 
 const AI_KEY = process.env.ANTHROPIC_API_KEY || "";
 
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
+export const codeAgentFunction = inngest.createFunction(
+  { id: "code agent" },
+  { event: "code-agent/run" },
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("aee4ci7q65yoagbk3ra8", {
@@ -24,7 +31,7 @@ export const helloWorld = inngest.createFunction(
       return sandbox.sandboxId;
     });
 
-    const codingAgent = createAgent({
+    const codingAgent = createAgent<AgentState>({
       name: "coding agent",
       description: "An expert coding agent",
       system: PROMPT,
@@ -84,7 +91,10 @@ export const helloWorld = inngest.createFunction(
               })
             ),
           }),
-          handler: async ({ files }, { step, network }) => {
+          handler: async (
+            { files },
+            { step, network }: Tool.Options<AgentState>
+          ) => {
             if (!files || !files.length) throw new Error("No files provided");
 
             const newFiles = await step?.run(
@@ -142,7 +152,7 @@ export const helloWorld = inngest.createFunction(
         onResponse: async ({ result, network }) => {
           const lastAssMessageText = lastAssitMessage(result);
           if (lastAssMessageText && network) {
-            if (lastAssMessageText.includes("<task_summary")) {
+            if (lastAssMessageText.includes("<task_summary>")) {
               network.state.data.summary = lastAssMessageText;
             }
           }
@@ -151,10 +161,10 @@ export const helloWorld = inngest.createFunction(
       },
     });
 
-    const network = createNetwork({
+    const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codingAgent],
-      maxIter: 2,
+      maxIter: 3,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
         if (summary) return;
@@ -165,6 +175,9 @@ export const helloWorld = inngest.createFunction(
     const result = await network.run(
       `Build a working ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`
     );
+    const isError =
+      !result.state.data.summary ||
+      Object.keys(result.state.data.files || {}).length === 0;
 
     console.log("AI output:", result);
 
@@ -174,8 +187,36 @@ export const helloWorld = inngest.createFunction(
       return `https://${host}`;
     });
 
+    const messageContent =
+      result?.state?.data?.summary || "No content generated";
+    await step.run("save to db", async () => {
+      if (isError) {
+        return await prisma.message.create({
+          data: {
+            content: "Something went wroong please try again!",
+            role: "ASSISTANT",
+            type: "ERROR",
+          },
+        });
+      }
+      return await prisma.message.create({
+        data: {
+          content: messageContent,
+          role: "ASSISTANT",
+          type: "RESULT",
+          fragment: {
+            create: {
+              sandboxUrl: sandboxUrl,
+              title: "Fragment",
+              files: result.state.data.files,
+            },
+          },
+        },
+      });
+    });
+
     return {
-      message: `outPut by AI ::::: ${result.state.data.files}`,
+      message: `outPut by AI ::::: ${result.state.data.summary}`,
       sandboxUrl,
       files: network.state.data.files,
       summary: network.state.data.summary,
