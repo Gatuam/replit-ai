@@ -5,7 +5,6 @@ import {
   createAgent,
   createNetwork,
   createTool,
-  type Tool,
 } from "@inngest/agent-kit";
 import { getSandbox, lastAssitMessage } from "./ultis";
 import z from "zod";
@@ -27,7 +26,7 @@ export const helloWorld = inngest.createFunction(
 
     const codingAgent = createAgent({
       name: "coding agent",
-      description: "An expert coding angent",
+      description: "An expert coding agent",
       system: PROMPT,
       model: anthropic({
         model: "claude-3-haiku-20240307",
@@ -40,7 +39,7 @@ export const helloWorld = inngest.createFunction(
       tools: [
         createTool({
           name: "terminal",
-          description: "use terminal to run cammands",
+          description: "Use terminal to run commands",
           parameters: z.object({
             command: z.string(),
           }),
@@ -57,7 +56,14 @@ export const helloWorld = inngest.createFunction(
                     buffers.stderr += data;
                   },
                 });
-                return result.stdout;
+                const output = result.stdout || buffers.stdout;
+                const errors = result.stderr || buffers.stderr;
+
+                if (errors) {
+                  return `${output}\nStderr: ${errors}`;
+                }
+
+                return output || "Command completed successfully";
               } catch (error) {
                 console.error(
                   `Command failed: ${error} error: ${buffers.stderr}`
@@ -69,7 +75,7 @@ export const helloWorld = inngest.createFunction(
         }),
         createTool({
           name: "createOrUpdateFile",
-          description: "Create or Update file in sandbox",
+          description: "Create or Update files in sandbox and start dev server",
           parameters: z.object({
             files: z.array(
               z.object({
@@ -79,22 +85,31 @@ export const helloWorld = inngest.createFunction(
             ),
           }),
           handler: async ({ files }, { step, network }) => {
+            if (!files || !files.length) throw new Error("No files provided");
+
             const newFiles = await step?.run(
               "createOrUpdateFiles",
               async () => {
                 try {
-                  const updatedFiles = network.state.data.file || {};
+                  const updatedFiles = network.state.data.files || {};
                   const sandbox = await getSandbox(sandboxId);
+
                   for (const file of files) {
+                    if (!file.path || !file.content) {
+                      throw new Error("File path or content missing");
+                    }
                     await sandbox.files.write(file.path, file.content);
                     updatedFiles[file.path] = file.content;
                   }
+
                   return updatedFiles;
                 } catch (error) {
-                  return "Error" + error;
+                  console.error("Error updating files:", error);
+                  return { error: error?.toString() };
                 }
               }
             );
+
             if (typeof newFiles === "object") {
               network.state.data.files = newFiles;
             }
@@ -102,7 +117,7 @@ export const helloWorld = inngest.createFunction(
         }),
         createTool({
           name: "readFiles",
-          description: "Read files from the sandboxed",
+          description: "Read files from the sandbox",
           parameters: z.object({
             files: z.array(z.string()),
           }),
@@ -117,7 +132,7 @@ export const helloWorld = inngest.createFunction(
                 }
                 return JSON.stringify(contents);
               } catch (error) {
-                return "Error, " + error;
+                return "Error: " + error;
               }
             });
           },
@@ -135,25 +150,23 @@ export const helloWorld = inngest.createFunction(
         },
       },
     });
+
     const network = createNetwork({
       name: "coding-agent-network",
       agents: [codingAgent],
       maxIter: 2,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
-        if (summary) {
-          return;
-        }
+        if (summary) return;
         return codingAgent;
       },
     });
+
     const result = await network.run(
       `Build a working ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`
     );
 
-    const text = (result as any)?.content ?? "";
-
-    console.log("AI output:", text);
+    console.log("AI output:", result);
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
@@ -162,10 +175,10 @@ export const helloWorld = inngest.createFunction(
     });
 
     return {
-      message: `outPut by ai ::::: ${text}`,
+      message: `outPut by AI ::::: ${result.state.data.files}`,
       sandboxUrl,
-      files: result.state.data.file,
-      summary: result.state.data.summary,
+      files: network.state.data.files,
+      summary: network.state.data.summary,
     };
   }
 );
