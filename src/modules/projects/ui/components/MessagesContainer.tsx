@@ -1,11 +1,12 @@
 "use client";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import React, { useEffect, useRef } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import { MessageCrad } from "./MessageCrad";
 import { MessageForm } from "./MessageForm";
 import { Fragment } from "@/generated/prisma";
 import { MessageLoading } from "./MessageLoading";
+import { ProjectHeader } from "./ProjectHeader";
 interface Props {
   projectId: string;
   activeFragment: Fragment | null;
@@ -39,9 +40,12 @@ export const MessagesContainer = ({
   const isLastMessageUser = lastMessage?.role === "USER";
 
   return (
-    <div className=" relative flex flex-col max-h-screen ">
-      <div className=" flex-1  overflow-y-auto no-scrollbar bg-gradient-to-b from-neutral-50 to-neutral-200 ">
-        <div className="pt-2 pr-1 space-y-2  ">
+    <div className=" flex flex-col max-h-screen min-h-screen ">
+      <Suspense fallback={<p>Loading project .....</p>}>
+        <ProjectHeader projectId={projectId} />
+      </Suspense>
+      <div className=" flex-1 overflow-y-auto no-scrollbar bg-gradient-to-b from-neutral-50 to-neutral-200 ">
+        <div className="pt-2 pr-1 space-y-2 ">
           {messages.map((message, i) => (
             <MessageCrad
               key={message.id}
