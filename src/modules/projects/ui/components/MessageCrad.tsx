@@ -42,7 +42,7 @@ const FragmentCard = ({
   return (
     <button
       className={cn(
-        "flex items-start text-start gap-2 border rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors cursor-pointer",
+        "flex items-start text-start gap-2 border shadow-md rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors cursor-pointer",
         isActiveFragment &&
           "bg-primary text-primary-foreground border-primary hover:bg-primary"
       )}
@@ -63,7 +63,7 @@ const FragmentCard = ({
 const UserMessage = ({ content }: UserMessageProps) => {
   return (
     <div className=" flex justify-end pb-3 pr-3 pl-10">
-      <Card className="rounded-md bg-gray-100 border border-[#111] p-3 shadow-none border-none max-w-[80%] break-words  ">
+      <Card className="rounded-md bg-gray-100 shadow-md border border-[#111] p-3 border-none max-w-[80%] break-words  ">
         <p className="text-sm text-neutral-800 ">{content}</p>
       </Card>
     </div>
@@ -98,8 +98,8 @@ const AiMessage = ({
         </span>
       </div>
       <div className="pl-12 flex flex-col gap-y-4">
-        <samp className="text-sm tracking-tight">
-          <p>{content}</p>
+        <samp className=" tracking-tight">
+          <p className=" text-md">{content}</p>
         </samp>
         {fragment && type === "RESULT" && (
           <FragmentCard
