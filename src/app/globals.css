@@ -143,3 +143,28 @@
   display: none;
 }
 
+/* For Webkit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 8px;               /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0;       /* Track color */
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;           /* Scrollbar handle color */
+    border-radius: 6px;
+    border: 3px solid #f0f0f0; /* Adds padding effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;           /* Hover effect */
+}
+
+/* Optional: For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #1a1a1a4b #f0f0f0;
+}

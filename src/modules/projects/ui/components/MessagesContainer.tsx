@@ -44,7 +44,7 @@ export const MessagesContainer = ({
       <Suspense fallback={<p>Loading project .....</p>}>
         <ProjectHeader projectId={projectId} />
       </Suspense>
-      <div className=" flex-1 overflow-y-auto no-scrollbar bg-gradient-to-b from-neutral-50 to-neutral-200 ">
+      <div className=" flex-1 overflow-y-auto no-scrollbar">
         <div className="pt-2 pr-1 space-y-2 ">
           {messages.map((message, i) => (
             <MessageCrad
