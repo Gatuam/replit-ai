@@ -34,7 +34,7 @@ export const ProjectHeader = ({ projectId }: ProjectHeaderProps) => {
   );
   return (
     <>
-      <div className="p-3 flex justify-between items-center border-b border-[#11111138] bg-white ">
+      <div className="p-3 flex justify-between items-center border-b ">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

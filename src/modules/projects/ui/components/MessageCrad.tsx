@@ -1,6 +1,7 @@
 "use client";
 import { Card } from "@/components/ui/card";
 import { Fragment, MessageRole, MessageType } from "@/generated/prisma";
+import { stripTaskSummary } from "@/lib/stripTaskSumart";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ChevronRight, Code2 } from "lucide-react";
@@ -99,7 +100,7 @@ const AiMessage = ({
       </div>
       <div className="pl-12 flex flex-col gap-y-4">
         <samp className=" tracking-tight">
-          <p className=" text-md">{content}</p>
+          <p className=" text-md">{stripTaskSummary(content)}</p>
         </samp>
         {fragment && type === "RESULT" && (
           <FragmentCard

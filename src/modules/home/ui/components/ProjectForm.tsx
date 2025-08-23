@@ -19,18 +19,22 @@ import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { PROJECT_TEMPLATES } from "@/constant";
+import { te } from "date-fns/locale";
 
 interface MessageProps {
   projectId: string;
 }
 const formSchema = z.object({
-  value: z.string()
+  value: z
+    .string()
     .min(1, { message: "Prompt is required" })
     .max(10000, { message: "Prompt is too long, must be under 10000 chars" }),
 });
 
-
-export const MessageForm = ({ projectId }: MessageProps) => {
+export const ProjectForm = () => {
+  const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -42,38 +46,43 @@ export const MessageForm = ({ projectId }: MessageProps) => {
     mode: "onChange",
   });
 
-  const createMessage = useMutation(
-    trpc.messages.create.mutationOptions({
-      onSuccess: () => {
-        form.reset({ value: ""});
+  const createProject = useMutation(
+    trpc.projects.create.mutationOptions({
+      onSuccess: (data) => {
+        form.reset({ value: "" });
         queryClient.invalidateQueries(
-          trpc.messages.getmany.queryOptions({ projectId })
+          trpc.projects.getmany.queryOptions()
         );
+        router.push(`/projects/${data.id}`)
       },
       onError: (error) => {
         toast.error(error.message);
       },
     })
   );
+  const onSelect = (value : string) => {
+    form.setValue("value", value, {
+      shouldDirty: true,
+      shouldTouch : true,
+      shouldValidate: true
+    })
+  }
   const [isFocused, setIsFocoued] = useState(false);
-  const [showUsage, setShowUsge] = useState(false);
-  const isPending = createMessage.isPending;
+  const isPending = createProject.isPending;
   const isDisable = isPending || !form.formState.isValid;
   const onSubmit = async (value: z.infer<typeof formSchema>) => {
-    await createMessage.mutateAsync({
+    await createProject.mutateAsync({
       value: value.value,
-      projectId,
     });
   };
   return (
-    <div>
+    <div className="space-y-5">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className={cn(
-            " relative border p-4 pt-1 rounded-xl  dark:bg-sidebar transition-all",
+            " relative border p-4 pt-1 rounded-xl space-y-1 bg-neutral-100 dark:bg-sidebar border-[#b1b1b14a] transition-all",
             isFocused && "shadow-xs",
-            showUsage && "rounded-t-none"
           )}
         >
           <FormField
@@ -97,7 +106,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
                         e.preventDefault();
                         form.handleSubmit(onSubmit)(e);
                       }
-                    }} 
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -113,7 +122,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
               &nbsp; to Submit
             </div>
             <Button
-            type="submit"
+              type="submit"
               size={"sm"}
               className={cn(
                 "size-8 rounded-full cursor-pointer",
@@ -124,6 +133,19 @@ export const MessageForm = ({ projectId }: MessageProps) => {
             </Button>
           </div>
         </form>
+        <div className=" flex-wrap justify-center gap-2 md:flex max-w-3xl flex">
+           {PROJECT_TEMPLATES.map((template, i)=> (
+            <Button
+            key={i}
+            variant={'outline'}
+            size={'sm'}
+            className=" bg-white dark:bg-sidebar cursor-pointer shadow-md "
+            onClick={()=> onSelect(template.prompt)}
+            >
+            {template.title}
+            </Button>
+           ))}   
+        </div>
       </Form>
     </div>
   );
