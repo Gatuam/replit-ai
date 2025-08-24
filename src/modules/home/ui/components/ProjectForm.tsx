@@ -22,6 +22,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { PROJECT_TEMPLATES } from "@/constant";
 import { te } from "date-fns/locale";
+import { useClerk } from "@clerk/nextjs";
+
 
 interface MessageProps {
   projectId: string;
@@ -34,6 +36,8 @@ const formSchema = z.object({
 });
 
 export const ProjectForm = () => {
+
+  const clerk = useClerk();
   const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -50,23 +54,24 @@ export const ProjectForm = () => {
     trpc.projects.create.mutationOptions({
       onSuccess: (data) => {
         form.reset({ value: "" });
-        queryClient.invalidateQueries(
-          trpc.projects.getmany.queryOptions()
-        );
-        router.push(`/projects/${data.id}`)
+        queryClient.invalidateQueries(trpc.projects.getmany.queryOptions());
+        router.push(`/projects/${data.id}`);
       },
       onError: (error) => {
         toast.error(error.message);
+        if (error.data?.code === "UNAUTHORIZED") {
+          clerk.openSignIn();
+        }
       },
     })
   );
-  const onSelect = (value : string) => {
+  const onSelect = (value: string) => {
     form.setValue("value", value, {
       shouldDirty: true,
-      shouldTouch : true,
-      shouldValidate: true
-    })
-  }
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
   const [isFocused, setIsFocoued] = useState(false);
   const isPending = createProject.isPending;
   const isDisable = isPending || !form.formState.isValid;
@@ -82,7 +87,7 @@ export const ProjectForm = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className={cn(
             " relative border p-4 pt-1 rounded-xl space-y-1 bg-neutral-100 dark:bg-sidebar border-[#b1b1b14a] transition-all",
-            isFocused && "shadow-xs",
+            isFocused && "shadow-xs"
           )}
         >
           <FormField
@@ -133,19 +138,21 @@ export const ProjectForm = () => {
             </Button>
           </div>
         </form>
-        <div className=" flex-wrap justify-center gap-2 md:flex max-w-3xl flex">
-           {PROJECT_TEMPLATES.map((template, i)=> (
-            <Button
-            key={i}
-            variant={'outline'}
-            size={'sm'}
-            className=" bg-white dark:bg-sidebar cursor-pointer shadow-md "
-            onClick={()=> onSelect(template.prompt)}
-            >
-            {template.title}
-            </Button>
-           ))}   
-        </div>
+        {(
+          <div className=" flex-wrap justify-center gap-2 md:flex max-w-3xl flex">
+            {PROJECT_TEMPLATES.map((template, i) => (
+              <Button
+                key={i}
+                variant={"outline"}
+                size={"sm"}
+                className=" bg-white dark:bg-sidebar cursor-pointer shadow-md "
+                onClick={() => onSelect(template.prompt)}
+              >
+                {template.title}
+              </Button>
+            ))}
+          </div>
+        )}
       </Form>
     </div>
   );
