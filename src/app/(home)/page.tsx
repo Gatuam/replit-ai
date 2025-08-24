@@ -7,7 +7,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className=" flex flex-col max-w-5xl mx-auto w-full">
-      <section className=" space-y-6 py-[16vh] 2xl:py-48">
+      <section className=" space-y-6 py-[17vh] 2xl:py-48">
         <div className=" flex flex-col items-center">
           <Image
             className=" hidden md:block"

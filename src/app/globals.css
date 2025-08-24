@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import '@clerk/themes/shadcn.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -167,4 +168,8 @@
 * {
     scrollbar-width: thin;
     scrollbar-color: #1a1a1a4b #f0f0f0;
+}
+
+button{
+  cursor: pointer;
 }

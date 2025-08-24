@@ -5,6 +5,7 @@ import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "sonner";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -23,15 +24,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <TRPCReactProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${poppins.variable} antialiased`}>
-          <ThemeProvider attribute="class" defaultTheme="dark">
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </body>
-      </html>
-    </TRPCReactProvider>
+    <ClerkProvider>
+      <TRPCReactProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${poppins.variable} antialiased`}>
+            <ThemeProvider attribute="class" defaultTheme="dark">
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </body>
+        </html>
+      </TRPCReactProvider>
+    </ClerkProvider>
   );
 }

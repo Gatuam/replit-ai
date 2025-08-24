@@ -1,10 +1,10 @@
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/db";
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
 import { z } from "zod";
 
 export const messageRouter = createTRPCRouter({
-  getmany: baseProcedure
+  getmany: protectedProcedure
     .input(
       z.object({
         projectId: z.string().min(1, { message: "Project id is required" }),
@@ -14,8 +14,9 @@ export const messageRouter = createTRPCRouter({
       const messages = await prisma.message.findMany({
         where: {
           projectId: input.projectId,
-        },include: {
-          fragment: true
+        },
+        include: {
+          fragment: true,
         },
         orderBy: {
           updatedAt: "asc",
@@ -23,7 +24,7 @@ export const messageRouter = createTRPCRouter({
       });
       return messages;
     }),
-  create: baseProcedure
+  create: protectedProcedure
     .input(
       z.object({
         value: z.string().min(1, { message: "Prompt is required" }).max(10000, {
