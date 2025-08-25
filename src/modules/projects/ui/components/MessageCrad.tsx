@@ -51,7 +51,6 @@ const FragmentCard = ({
     >
       <Code2 className="size-4 mt-1" />
       <div className="flex flex-col flex-1">
-        <span className="text-sm ">{fragment.title}</span>
         <span className="text-sm">Preview</span>
       </div>
       <div className=" flex items-center justify-center mt-1">

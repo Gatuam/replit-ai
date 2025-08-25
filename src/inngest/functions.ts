@@ -36,7 +36,7 @@ export const codeAgentFunction = inngest.createFunction(
       description: "An expert coding agent",
       system: PROMPT,
       model: anthropic({
-        model: "claude-3-5-haiku-20241022",
+        model: "claude-3-5-sonnet-latest",
         apiKey: AI_KEY,
         defaultParameters: {
           max_tokens: 4096,

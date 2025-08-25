@@ -87,7 +87,7 @@ export const ProjectView = ({ projectId }: Props) => {
                   variant={"default"}
                   size={"sm"}
                 >
-                  <Link href={"pricibg"}>
+                  <Link href='/pricing'>
                     <CrownIcon className="size-4">
                     </CrownIcon>
                     <span>Upgrade</span>
