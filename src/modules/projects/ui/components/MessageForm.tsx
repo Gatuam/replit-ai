@@ -14,25 +14,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import TextareaAutosize from "react-textarea-autosize";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Usage from "./Usage";
 
 interface MessageProps {
   projectId: string;
 }
 const formSchema = z.object({
-  value: z.string()
+  value: z
+    .string()
     .min(1, { message: "Prompt is required" })
     .max(10000, { message: "Prompt is too long, must be under 10000 chars" }),
 });
 
-
 export const MessageForm = ({ projectId }: MessageProps) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const { data: usage } = useQuery(trpc.usage.status.queryOptions());
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,7 +48,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
   const createMessage = useMutation(
     trpc.messages.create.mutationOptions({
       onSuccess: () => {
-        form.reset({ value: ""});
+        form.reset({ value: "" });
         queryClient.invalidateQueries(
           trpc.messages.getmany.queryOptions({ projectId })
         );
@@ -56,7 +59,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
     })
   );
   const [isFocused, setIsFocoued] = useState(false);
-  const [showUsage, setShowUsge] = useState(false);
+  const [showUsage, setShowUsage] = useState(true);
   const isPending = createMessage.isPending;
   const isDisable = isPending || !form.formState.isValid;
   const onSubmit = async (value: z.infer<typeof formSchema>) => {
@@ -68,6 +71,12 @@ export const MessageForm = ({ projectId }: MessageProps) => {
   return (
     <div>
       <Form {...form}>
+        {showUsage && (
+          <Usage
+            points={usage?.remainingPoints || 0}
+            msBeforeNext={usage?.msBeforeNext || 0}
+          />
+        )}
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className={cn(
@@ -97,7 +106,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
                         e.preventDefault();
                         form.handleSubmit(onSubmit)(e);
                       }
-                    }} 
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -113,7 +122,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
               &nbsp; to Submit
             </div>
             <Button
-            type="submit"
+              type="submit"
               size={"sm"}
               className={cn(
                 "size-8 rounded-full cursor-pointer",
