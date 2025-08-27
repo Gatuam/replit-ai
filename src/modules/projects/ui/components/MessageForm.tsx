@@ -20,6 +20,7 @@ import { useTRPC } from "@/trpc/client";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Usage from "./Usage";
+import { useRouter } from "next/navigation";
 
 interface MessageProps {
   projectId: string;
@@ -33,8 +34,9 @@ const formSchema = z.object({
 
 export const MessageForm = ({ projectId }: MessageProps) => {
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const { data: usage } = useQuery(trpc.usage.status.queryOptions());
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -52,9 +54,13 @@ export const MessageForm = ({ projectId }: MessageProps) => {
         queryClient.invalidateQueries(
           trpc.messages.getmany.queryOptions({ projectId })
         );
+        queryClient.invalidateQueries(trpc.usage.status.queryOptions());
       },
       onError: (error) => {
         toast.error(error.message);
+        if (error.data?.code === "TOO_MANY_REQUESTS") {
+          router.push("/pricing");
+        }
       },
     })
   );

@@ -21,11 +21,14 @@ export const MessagesContainer = ({
   const lastAssistantMessageIdRef = useRef<string | null>(null);
   const trpc = useTRPC();
   const { data: messages } = useSuspenseQuery(
-    trpc.messages.getmany.queryOptions({
-      projectId: projectId,
-    },{
-      refetchInterval : 5000,
-    })
+    trpc.messages.getmany.queryOptions(
+      {
+        projectId: projectId,
+      },
+      {
+        refetchInterval: 5000,
+      }
+    )
   );
   useEffect(() => {
     const lastAssistantMessage = messages.findLast(

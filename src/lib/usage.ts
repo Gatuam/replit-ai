@@ -3,14 +3,17 @@ import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
 
 const FREE_POINTS: number = 2;
+const PRO_POINTS: number = 3;
 const DURATION: number = 30 * 24 * 60 * 60;
 const POINTS_COST: number = 1;
 
 export async function getUsageTracker() {
+  const { has } = await auth();
+  const hasPremium = has({ plan: "pro" });
   const usageTracker = new RateLimiterPrisma({
     storeClient: prisma,
     tableName: "Usage",
-    points: FREE_POINTS,
+    points: hasPremium ? PRO_POINTS : FREE_POINTS,
     duration: DURATION,
   });
 

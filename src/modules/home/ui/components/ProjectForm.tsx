@@ -21,9 +21,7 @@ import { ArrowUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { PROJECT_TEMPLATES } from "@/constant";
-import { te } from "date-fns/locale";
 import { useClerk } from "@clerk/nextjs";
-
 
 interface MessageProps {
   projectId: string;
@@ -36,7 +34,6 @@ const formSchema = z.object({
 });
 
 export const ProjectForm = () => {
-
   const clerk = useClerk();
   const router = useRouter();
   const trpc = useTRPC();
@@ -55,12 +52,16 @@ export const ProjectForm = () => {
       onSuccess: (data) => {
         form.reset({ value: "" });
         queryClient.invalidateQueries(trpc.projects.getmany.queryOptions());
+        queryClient.invalidateQueries(trpc.usage.status.queryOptions());
         router.push(`/projects/${data.id}`);
       },
       onError: (error) => {
         toast.error(error.message);
         if (error.data?.code === "UNAUTHORIZED") {
           clerk.openSignIn();
+        }
+        if (error?.data?.code === "TOO_MANY_REQUESTS") {
+          router.push("/pricing");
         }
       },
     })
@@ -138,7 +139,7 @@ export const ProjectForm = () => {
             </Button>
           </div>
         </form>
-        {(
+        {
           <div className=" flex-wrap justify-center gap-2 md:flex max-w-3xl flex">
             {PROJECT_TEMPLATES.map((template, i) => (
               <Button
@@ -152,7 +153,7 @@ export const ProjectForm = () => {
               </Button>
             ))}
           </div>
-        )}
+        }
       </Form>
     </div>
   );

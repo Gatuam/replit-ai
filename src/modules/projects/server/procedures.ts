@@ -4,6 +4,7 @@ import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
 import { z } from "zod";
 import * as randomWordSlugs from "random-word-slugs";
 import { TRPCError } from "@trpc/server";
+import { consumeCredit } from "@/lib/usage";
 
 export const projectRouter = createTRPCRouter({
   getOne: protectedProcedure
@@ -52,6 +53,21 @@ export const projectRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      try {
+        await consumeCredit();
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Something went Wrong!",
+          });
+        } else {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "You have run out of points",
+          });
+        }
+      }
       const createProject = await prisma.project.create({
         data: {
           userId: ctx.auth.userId,
