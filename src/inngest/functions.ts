@@ -201,7 +201,7 @@ export const codeAgentFunction = inngest.createFunction(
     const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codingAgent],
-      maxIter: 5,
+      maxIter: 3,
       defaultState: state,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
