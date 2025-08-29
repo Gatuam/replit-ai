@@ -128,6 +128,7 @@ export const ProjectForm = () => {
               &nbsp; to Submit
             </div>
             <Button
+            disabled={isDisable}
               type="submit"
               size={"sm"}
               className={cn(

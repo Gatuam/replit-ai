@@ -128,6 +128,7 @@ export const MessageForm = ({ projectId }: MessageProps) => {
               &nbsp; to Submit
             </div>
             <Button
+            disabled={isDisable}
               type="submit"
               size={"sm"}
               className={cn(
