@@ -15,9 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Code, CrownIcon, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { CodeView } from "@/components/code-view/CodeView";
 import { FileExplore } from "@/components/code-view/file";
 import { UserControl } from "@/components/UserControl";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface Props {
   projectId: string;
@@ -45,13 +45,16 @@ export const ProjectView = ({ projectId }: Props) => {
           minSize={20}
           className="flex flex-col h-screen relative"
         >
-          <Suspense fallback={<p>Loading message...</p>}>
-            <MessagesContainer
-              activeFragment={activeFragment}
-              setActiveFragment={setActiveFragment}
-              projectId={projectId}
-            />
-          </Suspense>
+          {" "}
+          <ErrorBoundary fallback={<p>Messages error!</p>}>
+            <Suspense fallback={<p>Loading message...</p>}>
+              <MessagesContainer
+                activeFragment={activeFragment}
+                setActiveFragment={setActiveFragment}
+                projectId={projectId}
+              />
+            </Suspense>
+          </ErrorBoundary>
         </ResizablePanel>
         <ResizableHandle withHandle className="" />
 
@@ -87,9 +90,8 @@ export const ProjectView = ({ projectId }: Props) => {
                   variant={"default"}
                   size={"sm"}
                 >
-                  <Link href='/pricing'>
-                    <CrownIcon className="size-4">
-                    </CrownIcon>
+                  <Link href="/pricing">
+                    <CrownIcon className="size-4"></CrownIcon>
                     <span>Upgrade</span>
                   </Link>
                 </Button>

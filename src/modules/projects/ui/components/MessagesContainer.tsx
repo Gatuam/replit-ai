@@ -7,6 +7,7 @@ import { MessageForm } from "./MessageForm";
 import { Fragment } from "@/generated/prisma";
 import { MessageLoading } from "./MessageLoading";
 import { ProjectHeader } from "./ProjectHeader";
+import { ErrorBoundary } from "react-error-boundary";
 interface Props {
   projectId: string;
   activeFragment: Fragment | null;
@@ -51,9 +52,12 @@ export const MessagesContainer = ({
 
   return (
     <div className=" flex flex-col max-h-screen min-h-screen ">
-      <Suspense fallback={<p>Loading project .....</p>}>
-        <ProjectHeader projectId={projectId} />
-      </Suspense>
+      <ErrorBoundary fallback={<p>Project Header error!</p>}>
+        <Suspense fallback={<p>Loading project .....</p>}>
+          <ProjectHeader projectId={projectId} />
+        </Suspense>
+      </ErrorBoundary>
+
       <div className=" flex-1 overflow-y-auto no-scrollbar">
         <div className="pt-2 pr-1 space-y-2 ">
           {messages.map((message, i) => (

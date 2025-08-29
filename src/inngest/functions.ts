@@ -30,6 +30,7 @@ export const codeAgentFunction = inngest.createFunction(
         apiKey: process.env.E2B_API_KEY,
       });
       console.log("Connected to sandbox:", sandbox.sandboxId);
+      await sandbox.setTimeout(60_000 * 10);
       return sandbox.sandboxId;
     });
 
@@ -44,6 +45,7 @@ export const codeAgentFunction = inngest.createFunction(
           orderBy: {
             createdAt: "desc",
           },
+          take: 3,
         });
 
         for (const message of messages) {
@@ -53,7 +55,7 @@ export const codeAgentFunction = inngest.createFunction(
             content: message.content,
           });
         }
-        return formattedMessage;
+        return formattedMessage.reverse();
       }
     );
     const state = createState<AgentState>(
