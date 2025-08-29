@@ -73,7 +73,7 @@ export const codeAgentFunction = inngest.createFunction(
       description: "An expert coding agent",
       system: PROMPT,
       model: anthropic({
-        model: "claude-3-5-sonnet-latest",
+        model: "claude-3-5-haiku-latest",
         apiKey: AI_KEY,
         defaultParameters: {
           max_tokens: 4096,
@@ -201,7 +201,7 @@ export const codeAgentFunction = inngest.createFunction(
     const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codingAgent],
-      maxIter: 3,
+      maxIter: 4,
       defaultState: state,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
@@ -211,7 +211,7 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     const result = await network.run(
-      `Build a working and beautiful clerk ui level  ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`,
+      `Build a working and beautiful ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`,
       { state }
     );
     const isError =

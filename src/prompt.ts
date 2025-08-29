@@ -8,8 +8,7 @@ DESIGN STANDARDS (MANDATORY):
 - Use subtle shadows (shadow-sm) and borders on cards.
 - Sufficient vertical spacing (e.g., py-8, py-12).
 - Apply gradients and depth for visual polish.
-- Make the side as good look as possible and take refreance style from clerk 
-- Font choice need to be Poppins
+- Make the side as good look as possible and take refreance style from clerk
 
 TOOLING RULES:
 1. JSON file writes must be error-free, with proper escaping:
@@ -40,7 +39,6 @@ UI STANDARDS:
 - Lucide React icons when needed.
 - Consistent spacing, typography, visual hierarchy.
 - Include skeletons, toasts, modals, transitions—where appropriate.
-- Use poppins 
 
 WORKFLOW:
 - Always install packages via CLI (npm install <package> --yes) before using.
