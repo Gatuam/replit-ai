@@ -4,7 +4,7 @@ import { Fragment, MessageRole, MessageType } from "@/generated/prisma";
 import { stripTaskSummary } from "@/lib/stripTaskSumart";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { ChevronRight, Code2 } from "lucide-react";
+import { ChevronRight, Circle, Code, Code2, Code2Icon, LucideFileBarChart2, LucideFileX } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -52,6 +52,7 @@ const FragmentCard = ({
       <Code2 className="size-4 mt-1" />
       <div className="flex flex-col flex-1">
         <span className="text-sm">Preview</span>
+        <LucideFileBarChart2 className="size-5"/>
       </div>
       <div className=" flex items-center justify-center mt-1">
         <ChevronRight className="size-4" />

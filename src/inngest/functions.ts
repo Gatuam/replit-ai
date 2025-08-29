@@ -4,7 +4,9 @@ import {
   anthropic,
   createAgent,
   createNetwork,
+  createState,
   createTool,
+  Message,
   type Tool,
 } from "@inngest/agent-kit";
 import { getSandbox, lastAssitMessage } from "./ultis";
@@ -30,6 +32,39 @@ export const codeAgentFunction = inngest.createFunction(
       console.log("Connected to sandbox:", sandbox.sandboxId);
       return sandbox.sandboxId;
     });
+
+    const previousMessage = await step.run(
+      "get=previous-messages",
+      async () => {
+        const formattedMessage: Message[] = [];
+        const messages = await prisma.message.findMany({
+          where: {
+            projectId: event?.data?.projectId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        for (const message of messages) {
+          formattedMessage.push({
+            type: "text",
+            role: message.role === "ASSISTANT" ? "assistant" : "user",
+            content: message.content,
+          });
+        }
+        return formattedMessage;
+      }
+    );
+    const state = createState<AgentState>(
+      {
+        summary: "",
+        files: {},
+      },
+      {
+        messages: previousMessage,
+      }
+    );
 
     const codingAgent = createAgent<AgentState>({
       name: "coding agent",
@@ -164,7 +199,8 @@ export const codeAgentFunction = inngest.createFunction(
     const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codingAgent],
-      maxIter: 3,
+      maxIter: 5,
+      defaultState: state,
       router: async ({ network }) => {
         const summary = network.state.data.summary;
         if (summary) return;
@@ -173,7 +209,8 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     const result = await network.run(
-      `Build a working ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`
+      `Build a working and beautiful clerk ui level  ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`,
+      { state }
     );
     const isError =
       !result.state.data.summary ||
