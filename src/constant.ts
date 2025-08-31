@@ -1,42 +1,42 @@
 export const PROJECT_TEMPLATES = [
   {
-    title: "📝 Build a Notes App",
+    title: "📝 Simple Notes App",
     prompt:
-      "Build a notes app with add, edit, and delete functionality using local state. Show notes in cards with simple search and filtering. Keep the UI clean with minimal distractions.",
+      "Build a super simple notes app with add and delete functionality only. Use local state. Minimal UI, no extra features.",
   },
   {
-    title: "✅ Build a Todo List",
+    title: "✅ Simple Todo List",
     prompt:
-      "Create a todo list with add, check/uncheck, and delete options using local state. Support filtering (all, active, completed). Use clear spacing, icons, and simple animations.",
+      "Create a barebones todo list with add and remove only. Use local state. No filtering or animations.",
   },
   {
-    title: "📅 Build a Calendar",
+    title: "📅 Simple Calendar",
     prompt:
-      "Build a small calendar that displays the current month with days and allows adding simple events. Keep it lightweight, visually balanced, and easy to navigate.",
+      "Show the current month in a small calendar grid. No events or interactions, just the days laid out.",
   },
   {
-    title: "🔍 Build a Search UI",
+    title: "🔍 Simple Search UI",
     prompt:
-      "Create a search interface that filters a list of items (e.g., books or contacts) as you type. Use mock data and highlight matched text for clarity.",
+      "Display a list of items with a basic search input that filters them. Minimal styling, no fancy highlights.",
   },
   {
-    title: "🍔 Build a Restaurant Menu",
+    title: "🍔 Simple Menu",
     prompt:
-      "Build a restaurant menu with categories (starters, mains, desserts). Allow filtering by category and add a basic cart with local state. Prioritize readability and clear layout.",
+      "Show a static list of menu items. No cart or filtering. Just display items in a clean list.",
   },
   {
-    title: "📖 Build a Recipe Book",
+    title: "📖 Simple Recipe List",
     prompt:
-      "Build a recipe browser with cards for recipes, category filters, and a modal showing ingredients and steps. Keep it simple with a clean grid and consistent card styles.",
+      "Display a list of recipes with title and short description. No modals or filtering. Minimal UI.",
   },
   {
-    title: "👤 Build a Profile Card UI",
+    title: "👤 Simple Profile Card",
     prompt:
-      "Build a profile card UI that shows mock user data (name, job, contact). Add support for light/dark mode. Focus on clean alignment and polished card styles.",
+      "Show a basic profile card with name and role. No light/dark mode or extra styling.",
   },
   {
-    title: "📰 Build a Blog Homepage",
+    title: "📰 Simple Blog List",
     prompt:
-      "Build a blog-style homepage with post previews, categories, and a simple pagination or 'Load More' button. Use mock post data and keep spacing consistent.",
+      "Show a list of blog post titles and short previews. No pagination, categories, or styling beyond spacing.",
   }
 ] as const;

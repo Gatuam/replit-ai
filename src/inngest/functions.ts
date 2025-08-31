@@ -213,7 +213,10 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     const result = await network.run(
-      `Build a working and beautiful ${event?.data?.value} application. Use React components, proper styling, and implement all features. Create the necessary files in the sandbox.`,
+      `Build a working and simple ${event?.data?.value} application. Use React components, and implement all features. Create the necessary files in the sandbox End output exactly with:
+      <task_summary>
+      Short summary of what was created.
+      </task_summary>.`,
       { state }
     );
     const isError =

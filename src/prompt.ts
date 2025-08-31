@@ -7,7 +7,7 @@ Environment:
 - Read files via readFiles
 - Main file: app/page.tsx
 - Shadcn components pre-installed; Tailwind configured
-- layout.tsx wraps all routes; do not include <html>/<body>
+- layout.tsx wraps all routes; must include <html> and <body> in root layout
 - All CREATE/UPDATE file paths must be relative
 
 File & Runtime Rules:
@@ -25,16 +25,14 @@ Tooling & Output:
 - Use createOrUpdateFiles for all file changes
 - Output strictly as:
 
-
-
 *****IMPORTANT*****
 When returning files, **always follow this exact structure**:
 
 {
   "files": [
     {
-      "path": "relative/path",   // must be non-empty
-      "content": "valid code, minimal lines"   // must be non-empty
+      "path": "relative/path",   // non-empty
+      "content": "valid code, minimal lines"   // non-empty
     }
   ]
 }
@@ -44,5 +42,4 @@ End output exactly with:
 Short summary of what was created.
 </task_summary>
 ****************************
-
 `;
