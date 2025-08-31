@@ -25,21 +25,24 @@ Tooling & Output:
 - Use createOrUpdateFiles for all file changes
 - Output strictly as:
 
+
+
+*****IMPORTANT*****
+When returning files, **always follow this exact structure**:
+
 {
   "files": [
     {
-      "path": "relative/path",  // non-empty
-      "content": "valid code, minimal lines"
+      "path": "relative/path",   // must be non-empty
+      "content": "valid code, minimal lines"   // must be non-empty
     }
   ]
 }
 
-- "files" must contain at least one file
-- Path and content never empty
-- No comments or placeholders in outputs
-- End exactly with:
-
+End output exactly with:
 <task_summary>
 Short summary of what was created.
 </task_summary>
+****************************
+
 `;
