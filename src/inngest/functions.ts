@@ -73,7 +73,7 @@ export const codeAgentFunction = inngest.createFunction(
       description: "An expert coding agent",
       system: PROMPT,
       model: anthropic({
-        model: "claude-3-5-haiku-latest",
+        model: "claude-3-5-sonnet-20241022",
         apiKey: AI_KEY,
         defaultParameters: {
           max_tokens: 4096,
@@ -121,12 +121,14 @@ export const codeAgentFunction = inngest.createFunction(
           name: "createOrUpdateFile",
           description: "Create or Update files in sandbox and start dev server",
           parameters: z.object({
-            files: z.array(
-              z.object({
-                path: z.string(),
-                content: z.string(),
-              })
-            ),
+            files: z
+              .array(
+                z.object({
+                  path: z.string().min(1, "Path cannot be empty"),
+                  content: z.string().min(1, "Content cannot be empty"),
+                })
+              )
+              .min(1, "At least one file must be provided"),
           }),
           handler: async (
             { files },
@@ -201,7 +203,7 @@ export const codeAgentFunction = inngest.createFunction(
     const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codingAgent],
-      maxIter: 4,
+      maxIter: 3,
       defaultState: state,
       router: async ({ network }) => {
         const summary = network.state.data.summary;

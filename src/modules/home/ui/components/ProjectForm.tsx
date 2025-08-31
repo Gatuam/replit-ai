@@ -141,13 +141,13 @@ export const ProjectForm = () => {
           </div>
         </form>
         {
-          <div className=" flex-wrap justify-center gap-2 md:flex max-w-3xl flex">
+          <div className=" flex-wrap  justify-center gap-2 md:flex max-w-3xl flex">
             {PROJECT_TEMPLATES.map((template, i) => (
               <Button
                 key={i}
                 variant={"outline"}
                 size={"sm"}
-                className=" bg-white dark:bg-sidebar cursor-pointer shadow-md "
+                className=" bg-white dark:bg-sidebar cursor-pointer shadow-md text-sm "
                 onClick={() => onSelect(template.prompt)}
               >
                 {template.title}

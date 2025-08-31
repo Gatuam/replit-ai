@@ -3,7 +3,7 @@ import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
 
 const FREE_POINTS: number = 2;
-const PRO_POINTS: number = 3;
+const PRO_POINTS: number = 5;
 const DURATION: number = 30 * 24 * 60 * 60;
 const POINTS_COST: number = 1;
 
